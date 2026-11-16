@@ -318,6 +318,35 @@ saved UI run is not implemented**. Reproduce dataset simulations with the same
 manifest, pinned model, arguments, and dependency versions. Uploaded-image runs
 cannot be reconstructed from logs alone because the photos are not persisted.
 
+## Static web version (GitHub Pages)
+
+`docs/` is a self-contained copy of the demo that runs entirely in the browser,
+with no Python and no model download. The encoder is frozen, so every photo's
+SigLIP2 embedding and each task's text prior are computed once and shipped as
+data; the browser only runs the small probe (`docs/probe.js`, a line-for-line port
+of `probe.py`, checked against it in `tests/test_web.py`). It has the same layout:
+task buttons, the labeling panel with flip reporting, the two boxed held-out
+galleries, a learning curve, and settings for labeling order, prior strength,
+reset and auto-labeling. Uploading your own photos is not available there, since
+that would need the image encoder in the browser.
+
+Rebuild the site data after changing the photos or splits:
+
+```bash
+curl -LO https://storage.googleapis.com/openimages/2018_04/validation/validation-images-with-rotation.csv
+online-ml export-web --manifest data/four-shared.jsonl --output docs \
+  --credits validation-images-with-rotation.csv
+python -m http.server --directory docs   # preview at http://localhost:8000
+```
+
+This rewrites `docs/data/` (task JSON with embeddings and labels) and `docs/img/`
+(photos resized to 400 px, EXIF stripped); the page files themselves are not
+generated. The credits CSV supplies each Open Images photo's author, original page
+and license, shown under **Photo credits** and as hover text; export refuses to
+publish an Open Images photo without that credit. Only reviewed photos are
+exported. To publish, push the repository to GitHub and set **Settings → Pages →
+Build and deployment** to *Deploy from a branch*, branch `main`, folder `/docs`.
+
 ## Privacy and resource notes
 
 - Both apps bind to `127.0.0.1`, never request a public Gradio share link, and are
@@ -348,8 +377,11 @@ src/online_ml/
   tracking.py     JSONL logs, compatible-run matching, CSV export
   app.py          Session-isolated Gradio feedback demo
   review.py       Human label-review UI
+  web.py          Static-site export (embeddings, priors, photos, credits)
   cli.py          Command-line entry points
-tests/            Offline unit, model API, and UI callback tests
+docs/             GitHub Pages site: index.html, app.js, probe.js, style.css,
+                  plus generated data/ and img/
+tests/            Offline unit, model API, UI callback, and browser-probe tests
 ```
 
 ```bash

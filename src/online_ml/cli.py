@@ -87,6 +87,14 @@ def build_parser() -> argparse.ArgumentParser:
     app.add_argument("--port", type=int, default=7860)
     export = sub.add_parser("export", help="Export an experiment JSONL to CSV")
     export.add_argument("run", type=Path)
+
+    web = sub.add_parser("export-web", help="Build the static GitHub Pages data (docs/)")
+    web.add_argument("--manifest", type=Path, required=True)
+    web.add_argument("--output", type=Path, default=Path("docs"))
+    web.add_argument("--credits", type=Path,
+                     help="Open Images image metadata CSV with authors and licenses "
+                          "(validation-images-with-rotation.csv)")
+    _model_options(web)
     return parser
 
 
@@ -143,6 +151,15 @@ def _run(args):
         from .tracking import export_csv
 
         print(export_csv(args.run))
+    elif args.command == "export-web":
+        from .web import export_web, load_open_images_credits
+
+        credits = load_open_images_credits(args.credits) if args.credits else {}
+        index = export_web(_encoder(args), load_manifest(args.manifest), args.output,
+                           credits=credits)
+        for task in index["tasks"]:
+            print(f"{task['key']}: {task['held_out']} held-out, {task['pool']} to label")
+        print(f"Wrote {args.output}/data and {args.output}/img")
     elif args.command == "app":
         from .app import build_app
 

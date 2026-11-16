@@ -1,0 +1,46 @@
+{
+  "tasks": [
+    {
+      "key": "religion",
+      "title": "Religious Symbols & Crosses",
+      "positive_name": "Religious",
+      "negative_name": "Everyday",
+      "file": "data/religion.json",
+      "held_out": 20,
+      "pool": 46
+    },
+    {
+      "key": "people",
+      "title": "People & Crowds",
+      "positive_name": "People",
+      "negative_name": "No people",
+      "file": "data/people.json",
+      "held_out": 20,
+      "pool": 42
+    },
+    {
+      "key": "pets",
+      "title": "Pets vs Wild Animals",
+      "positive_name": "Pet",
+      "negative_name": "Wild",
+      "file": "data/pets.json",
+      "held_out": 20,
+      "pool": 120
+    },
+    {
+      "key": "scenery",
+      "title": "Natural vs Landscaped",
+      "positive_name": "Natural",
+      "negative_name": "Landscaped",
+      "file": "data/scenery.json",
+      "held_out": 20,
+      "pool": 23
+    }
+  ],
+  "regularization": 0.1,
+  "optimizer_steps": 300,
+  "encoder": {
+    "model": "google/siglip2-base-patch16-224",
+    "revision": "75de2d55ec2d0b4efc50b3e9ad70dba96a7b2fa2"
+  }
+}

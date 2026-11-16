@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feedback Lab · Online learning in your browser</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230d9488'/%3E%3Cpath d='M4 8.5l2.5 2.5L12 5' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>Feedback Lab</h1>
+      <p>Label a few photos and watch a classifier learn, live in your browser.</p>
+    </div>
+    <nav id="tasks" aria-label="Task"></nav>
+  </header>
+
+  <section id="summary" aria-live="polite">Loading…</section>
+
+  <main>
+    <aside id="labeler">
+      <h2>Label this photo</h2>
+      <div class="photo-frame"><img id="current" alt="Photo to label"></div>
+      <p id="prompt"></p>
+      <div class="buttons">
+        <button id="label-yes" class="primary"></button>
+        <button id="label-no" class="primary"></button>
+      </div>
+      <button id="skip" class="quiet">Skip</button>
+      <p id="status" aria-live="polite"></p>
+      <svg id="curve" viewBox="0 0 320 170" role="img" aria-label="Learning curve"></svg>
+    </aside>
+
+    <section id="held-out">
+      <h2>Held-out photos <span class="legend"><span class="swatch right"></span> model is right
+        <span class="swatch wrong"></span> model is wrong</span></h2>
+      <h3 id="title-yes"></h3>
+      <div id="gallery-yes" class="gallery"></div>
+      <h3 id="title-no"></h3>
+      <div id="gallery-no" class="gallery"></div>
+    </section>
+  </main>
+
+  <details id="settings">
+    <summary>Settings</summary>
+    <div class="settings-grid">
+      <fieldset>
+        <legend>Which photos to label</legend>
+        <label><input type="radio" name="order" value="uncertainty" checked>
+          Least confident first (active learning)</label>
+        <label><input type="radio" name="order" value="random"> Random</label>
+      </fieldset>
+      <label>Text-prior regularization
+        <input id="regularization" type="number" min="0.0001" max="10" step="0.01">
+      </label>
+      <div class="settings-actions">
+        <button id="reset">Reset feedback</button>
+        <button id="simulate">Auto-label 5 (reviewed labels)</button>
+      </div>
+    </div>
+    <p class="note" id="descriptions"></p>
+  </details>
+
+  <details id="about">
+    <summary>How it works</summary>
+    <p>Each photo was encoded once by a frozen
+      <a href="https://huggingface.co/google/siglip2-base-patch16-224">SigLIP2</a> image
+      encoder; the two class descriptions were encoded by its text encoder. The starting
+      "zero-shot" classifier simply compares a photo with the two descriptions. Every label
+      you give retrains a small linear classifier on top of the frozen embeddings, starting
+      from that text-based guess and pulled back toward it, with both classes weighted
+      equally. Nothing leaves your browser and nothing is saved.</p>
+    <p>Held-out photos are never used for training. They were chosen to include photos the
+      zero-shot classifier finds hard, so its starting score is lower than it would be on
+      typical photos. With 20 held-out photos per task, each one is worth 5 points.
+      Improvement is not guaranteed.</p>
+  </details>
+
+  <details id="credits">
+    <summary>Photo credits</summary>
+    <p class="note">Photos from <a href="https://storage.googleapis.com/openimages/web/index.html">Open
+      Images V7</a>, resized. Each is credited to its author below with a link to the
+      original and its license.</p>
+    <ol id="credit-list"></ol>
+  </details>
+
+  <script src="probe.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
