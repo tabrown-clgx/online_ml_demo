@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "online-ml-demo"
+version = "0.1.0"
+description = "Feedback-driven linear probes on a frozen SigLIP2 encoder"
+readme = "readme.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24,<3", "Pillow>=10,<13"]
+
+[project.optional-dependencies]
+model = ["torch>=2.2,<3", "transformers>=4.51,<5", "sentencepiece>=0.2,<1"]
+app = ["gradio>=5.20,<6", "matplotlib>=3.8,<4"]
+data = ["fiftyone>=1.3,<2"]
+dev = ["pytest>=8,<10", "ruff>=0.9,<1"]
+
+[project.scripts]
+online-ml = "online_ml.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
