@@ -1,5 +1,8 @@
 # Online Learning · Feedback Lab
 
+**Live demo: https://tabrown-clgx.github.io/online_ml_demo/** (runs entirely in your
+browser; see [Static web version](#static-web-version-github-pages)).
+
 A local Gradio demo of rapid learning from photo feedback. A frozen
 [SigLIP2](https://huggingface.co/google/siglip2-base-patch16-224) encoder provides image
 and text embeddings. Compare a text-only zero-shot baseline with a tiny linear
